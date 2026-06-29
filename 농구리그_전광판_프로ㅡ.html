@@ -1,0 +1,77 @@
+
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">
+<title>농구 리그 전광판</title>
+<style>
+body{margin:0;background:#000;color:#fff;font-family:Arial}
+.wrap{display:grid;grid-template-columns:2fr 1fr;gap:18px;padding:20px}
+.panel{border:2px solid #555;border-radius:12px;padding:18px}
+.score{font-size:90px;text-align:center}
+.clock,.shot{font-size:72px;text-align:center}
+button,input,select{font-size:18px;margin:4px;padding:8px}
+.current{background:#0a4}.done{background:#333}
+li{padding:6px}
+</style></head><body>
+<div class="wrap">
+<div class="panel">
+<h1>🏀 1대1 리그 전광판</h1>
+<div><input id=a placeholder="A 선수"><input id=b placeholder="B 선수">
+<button onclick="applyNames()">이름 적용</button></div>
+<div class=score><span id=an>A</span> <span id=as>0</span> : <span id=bs>0</span> <span id=bn>B</span></div>
+<div class=clock>경기 <span id=gc>05:00</span></div>
+<div class=shot>샷클락 <span id=sc>14</span></div>
+<div>
+<button onclick=toggle()>▶/⏸</button>
+<button onclick="resetShot(14)">14초</button>
+<button onclick="resetShot(24)">24초</button>
+<select id=mins onchange="setGame()"><option>3</option><option selected>5</option><option>7</option><option>10</option></select>분
+</div>
+<div>
+<button onclick="add('a',1)">A+1</button><button onclick="add('a',2)">A+2</button><button onclick="add('a',3)">A+3</button>
+<button onclick="sub('a')">A-1</button><br>
+<button onclick="add('b',1)">B+1</button><button onclick="add('b',2)">B+2</button><button onclick="add('b',3)">B+3</button>
+<button onclick="sub('b')">B-1</button>
+</div>
+</div>
+<div class="panel">
+<h2>대진표</h2>
+<textarea id=players rows=8 cols=20 placeholder="선수 이름 한 줄에 한 명"></textarea><br>
+<button onclick=makeBracket()>대진표 생성</button>
+<button onclick=nextGame()>다음 경기</button>
+<ol id=bracket></ol>
+</div>
+</div>
+<script>
+let run=false,shot=14,game=300,as=0,bs=0,idx=0;
+function beep(){try{let c=new(window.AudioContext||webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.25);o.stop(c.currentTime+.25);}catch(e){alert("부저!");}}
+function applyNames(){an.textContent=a.value||"A";bn.textContent=b.value||"B";}
+function add(t,n){if(t=='a'){as+=n;aspan=as}else{bs+=n;aspan=bs}document.getElementById(t=='a'?'as':'bs').textContent=aspan;}
+function sub(t){if(t=='a'){as=Math.max(0,as-1);document.getElementById('as').textContent=as}else{bs=Math.max(0,bs-1);document.getElementById('bs').textContent=bs}}
+function resetShot(n){shot=n;sc.textContent=shot;}
+function setGame(){game=parseInt(mins.value)*60;drawGame();}
+function drawGame(){let m=Math.floor(game/60),s=game%60;gc.textContent=String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');}
+function toggle(){run=!run;}
+setInterval(()=>{if(!run)return;if(game>0){game--;drawGame();}if(shot>0){shot--;sc.textContent=shot;if(shot==0)beep();}},1000);
+function makeBracket(){
+ let p=players.value.trim().split(/\n+/).filter(x=>x);
+ bracket.innerHTML=""; idx=0;
+ for(let i=0;i<p.length-1;i+=2){
+   let li=document.createElement('li');
+   li.textContent=p[i]+" vs "+p[i+1];
+   if(i==0){li.className='current'; let sp=li.textContent.split(" vs ");an.textContent=sp[0];bn.textContent=sp[1];}
+   bracket.appendChild(li);
+ }
+}
+function nextGame(){
+ let items=[...bracket.children];
+ if(idx<items.length){items[idx].className='done';}
+ idx++;
+ if(idx<items.length){
+   items[idx].className='current';
+   let sp=items[idx].textContent.split(" vs ");
+   an.textContent=sp[0];bn.textContent=sp[1];
+ }
+ as=bs=0;document.getElementById('as').textContent=0;document.getElementById('bs').textContent=0;
+ resetShot(14);setGame();
+}
+drawGame();
+</script></body></html>
