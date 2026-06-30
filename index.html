@@ -40,6 +40,15 @@ h1,h2{text-align:center}
 .clock{font-size:76px;color:#ffb020;text-shadow:0 0 15px #ffb020}
 .shot{font-size:60px;color:#ff3030;text-shadow:0 0 15px #ff3030}
 .quarter{font-size:42px}
+.blink{
+  animation: blink 0.5s infinite;
+}
+
+@keyframes blink{
+  0%{opacity:1;}
+  50%{opacity:0.2;}
+  100%{opacity:1;}
+}
 button,input,select,textarea{
   font-size:18px;
   margin:5px;
@@ -223,7 +232,11 @@ function togglePos(){
   possession=possession=='A'?'B':'A';
   pos.textContent=possession=='A'?'⬅️ A':'B ➡️';
 }
-function resetShot(n){shot=n;sc.textContent=shot;}
+function resetShot(n){
+  shot=n;
+  sc.textContent=shot;
+  sc.classList.remove("blink");
+}
 function setGame(){game=parseInt(mins.value)*60;drawGame();}
 function drawGame(){
   let m=Math.floor(game/60), s=game%60;
@@ -258,13 +271,21 @@ setInterval(()=>{
     }
   }
 
-  if(shot>0){
+if(shot>0){
     shot--;
     sc.textContent=shot;
 
-    if(shot==0){
-      beep();
+    if(shot<=5 && shot>0){
+        sc.classList.add("blink");
+    }else{
+        sc.classList.remove("blink");
     }
+
+    if(shot==0){
+        sc.classList.remove("blink");
+        beep();
+    }
+}
   }
 },1000);
 
