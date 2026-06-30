@@ -258,7 +258,7 @@ function resetQuarter(){
 }
 
 setInterval(()=>{
-  if(!run)return;
+  if(!run) return;
 
   if(game>0){
     game--;
@@ -271,23 +271,20 @@ setInterval(()=>{
     }
   }
 
-if(shot>0){
+  if(shot>0){
     shot--;
     sc.textContent=shot;
 
     if(shot<=5 && shot>0){
-        sc.classList.add("blink");
-    }else{
-        sc.classList.remove("blink");
+      sc.classList.add("blink");
     }
 
     if(shot==0){
-        sc.classList.remove("blink");
-        beep();
+      sc.classList.remove("blink");
+      beep();
     }
-}
+  }
 },1000);
-
 function playerScore(point){
   let name=playerName.value.trim();
   let team=playerTeam.value;
