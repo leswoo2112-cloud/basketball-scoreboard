@@ -1,266 +1,249 @@
-
-<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
 <title>농구 리그 전광판</title>
 <style>
-body{margin:0;background:#000;color:#fff;font-family:Arial}
-.wrap{display:grid;grid-template-columns:2fr 1fr;gap:18px;padding:20px}
-.panel{border:2px solid #555;border-radius:12px;padding:18px}
-.score{font-size:90px;text-align:center}
-.clock,.shot{font-size:72px;text-align:center}
-button,input,select{font-size:18px;margin:4px;padding:8px}
-.current{background:#0a4}.done{background:#333}
+body{
+  margin:0;
+  background:radial-gradient(circle at top,#1b1f27,#05070a 70%);
+  color:white;
+  font-family:Arial,sans-serif;
+}
+.wrap{
+  display:grid;
+  grid-template-columns:1fr 1.4fr 1fr;
+  gap:18px;
+  padding:20px;
+}
+.panel,.board{
+  border:2px solid #39424f;
+  border-radius:16px;
+  padding:18px;
+  background:linear-gradient(145deg,#111820,#05070a);
+  box-shadow:0 0 25px #000;
+}
+h1,h2{text-align:center}
+.teamA{color:#ff3b3b}
+.teamB{color:#3b82ff}
+.score{
+  font-size:110px;
+  text-align:center;
+  font-weight:bold;
+  text-shadow:0 0 18px currentColor;
+}
+.clock,.shot,.quarter{
+  text-align:center;
+  font-weight:bold;
+  margin:12px;
+}
+.clock{font-size:76px;color:#ffb020;text-shadow:0 0 15px #ffb020}
+.shot{font-size:60px;color:#ff3030;text-shadow:0 0 15px #ff3030}
+.quarter{font-size:42px}
+button,input,select,textarea{
+  font-size:18px;
+  margin:5px;
+  padding:10px 14px;
+  border-radius:8px;
+  border:1px solid #596272;
+  background:#111827;
+  color:white;
+}
+button{cursor:pointer}
+.red{background:#8b1111}
+.blue{background:#0f3f8f}
+.mainbtn{background:#202938}
+.current{background:#0a4;padding:6px}
+.done{background:#333;padding:6px}
 li{padding:6px}
-</style></head><body>
+</style>
+</head>
+
+<body>
 <div class="wrap">
+
 <div class="panel">
-<h1>🏀 1대1 리그 전광판</h1>
-<div><input id=a placeholder="A 선수"><input id=b placeholder="B 선수">
-<button onclick="applyNames()">이름 적용</button></div>
-<div class=score><span id=an>A</span> <span id=as>0</span> : <span id=bs>0</span> <span id=bn>B</span></div>
-<div style="font-size:28px;text-align:center;margin:10px;">
-A 파울: <span id="af">0</span> &nbsp;&nbsp; B 파울: <span id="bf">0</span>
-</div>
-<div class=clock>경기 <span id=gc>05:00</span></div>
-<div class=clock>쿼터 <span id=q>1</span>Q</div>
-<div class=shot>샷클락 <span id=sc>14</span></div>
-<div style="font-size:36px;text-align:center;margin:10px;">
-공격권 : <span id="pos">⬅️ A</span>
-</div>
-<button onclick="togglePos()">공격권 변경</button>
-<div>
-<button onclick=toggle()>▶/⏸</button>
+<h1>🏀 1대1 리그</h1>
+<input id="a" placeholder="A 선수">
+<input id="b" placeholder="B 선수">
+<button class="mainbtn" onclick="applyNames()">이름 적용</button>
+
+<h2>컨트롤</h2>
+<button class="mainbtn" onclick="toggle()">▶/⏸</button>
 <button onclick="resetShot(14)">14초</button>
 <button onclick="resetShot(24)">24초</button>
 <button onclick="nextQuarter()">다음 쿼터</button>
 <button onclick="resetQuarter()">쿼터 초기화</button>
-<select id=mins onchange="setGame()">
+
+<br>
+<select id="mins" onchange="setGame()">
 <option>3</option>
 <option selected>5</option>
 <option>7</option>
 <option>10</option>
 </select>
+
+<h2>공격권</h2>
+<button class="red" onclick="togglePos()">공격권 변경</button>
+
+<h2>대진표</h2>
+<textarea id="players" rows="8" cols="20" placeholder="선수 이름 한 줄에 한 명"></textarea><br>
+<button onclick="makeBracket()">대진표 생성</button>
+<button onclick="nextGame()">다음 경기</button>
+<ol id="bracket"></ol>
+</div>
+
+<div class="board">
+<h1><span id="an" class="teamA">A</span> VS <span id="bn" class="teamB">B</span></h1>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+<div>
+<h2 class="teamA">A TEAM</h2>
+<div id="as" class="score teamA">0</div>
 </div>
 <div>
-<button onclick="add('a',1)">A+1</button><button onclick="add('a',2)">A+2</button><button onclick="add('a',3)">A+3</button>
-<button onclick="sub('a')">A-1</button><br>
-<button onclick="add('b',1)">B+1</button><button onclick="add('b',2)">B+2</button><button onclick="add('b',3)">B+3</button>
-<button onclick="sub('b')">B-1</button>
-<br>
-<button onclick="foul('a',1)">A 파울+</button>
-<button onclick="foul('a',-1)">A 파울-</button>
-<button onclick="foul('b',1)">B 파울+</button>
-<button onclick="foul('b',-1)">B 파울-</button>
-<div class="panel">
-<h2>선수 득점 기록</h2>
+<h2 class="teamB">B TEAM</h2>
+<div id="bs" class="score teamB">0</div>
+</div>
+</div>
 
+<div class="clock">경기 <span id="gc">05:00</span></div>
+<div class="quarter">QUARTER <span id="q">1</span>Q</div>
+<div class="shot">SHOT CLOCK <span id="sc">14</span></div>
+
+<h2>공격권 <span id="pos">⬅️ A</span></h2>
+<h2>A 파울 <span id="af">0</span> | B 파울 <span id="bf">0</span></h2>
+</div>
+
+<div class="panel">
+<h2>점수</h2>
+<button class="red" onclick="add('a',1)">A +1</button>
+<button class="red" onclick="add('a',2)">A +2</button>
+<button class="red" onclick="add('a',3)">A +3</button>
+<button onclick="sub('a')">A -1</button>
+<br>
+<button class="blue" onclick="add('b',1)">B +1</button>
+<button class="blue" onclick="add('b',2)">B +2</button>
+<button class="blue" onclick="add('b',3)">B +3</button>
+<button onclick="sub('b')">B -1</button>
+
+<h2>파울</h2>
+<button class="red" onclick="foul('a',1)">A 파울+</button>
+<button onclick="foul('a',-1)">A 파울-</button>
+<br>
+<button class="blue" onclick="foul('b',1)">B 파울+</button>
+<button onclick="foul('b',-1)">B 파울-</button>
+
+<h2>선수 득점 기록</h2>
 <input id="playerName" placeholder="선수 이름">
 <select id="playerTeam">
 <option value="a">A팀</option>
 <option value="b">B팀</option>
-</select>
-
-<br>
-
+</select><br>
 <button onclick="playerScore(1)">선수 +1</button>
 <button onclick="playerScore(2)">선수 +2</button>
 <button onclick="playerScore(3)">선수 +3</button>
-
 <ul id="playerStats"></ul>
 </div>
-</div>
-</div>
-<div class="panel">
-<h2>대진표</h2>
-<textarea id=players rows=8 cols=20 placeholder="선수 이름 한 줄에 한 명"></textarea><br>
-<button onclick=makeBracket()>대진표 생성</button>
-<button onclick=nextGame()>다음 경기</button>
-<ol id=bracket></ol>
-</div>
-</div>
-<script>
 
+</div>
+
+<script>
 let run=false, shot=14, game=300, scoreA=0, scoreB=0, af=0, bf=0, idx=0, quarter=1;
 let possession='A';
 let stats={};
 
-function beep(){
-  try{
-    let c=new(window.AudioContext||webkitAudioContext)();
-    let o=c.createOscillator();
-    let g=c.createGain();
-    o.connect(g); g.connect(c.destination);
-    o.start();
-    g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.25);
-    o.stop(c.currentTime+.25);
-  }catch(e){alert("부저!");}
-}
+function beep(){try{let c=new(window.AudioContext||webkitAudioContext)();let o=c.createOscillator();let g=c.createGain();o.connect(g);g.connect(c.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.25);o.stop(c.currentTime+.25);}catch(e){alert("부저!");}}
 
 function applyNames(){
-  document.getElementById('an').textContent=document.getElementById('a').value||"A";
-  document.getElementById('bn').textContent=document.getElementById('b').value||"B";
+  an.textContent=document.getElementById('a').value||"A";
+  bn.textContent=document.getElementById('b').value||"B";
 }
 
 function add(t,n){
-  if(t=='a'){
-    scoreA+=n;
-    document.getElementById('as').textContent=scoreA;
-  }else{
-    scoreB+=n;
-    document.getElementById('bs').textContent=scoreB;
-  }
+  if(t=='a'){scoreA+=n;as.textContent=scoreA;}
+  else{scoreB+=n;bs.textContent=scoreB;}
 }
-
 function sub(t){
-  if(t=='a'){
-    scoreA=Math.max(0,scoreA-1);
-    document.getElementById('as').textContent=scoreA;
-  }else{
-    scoreB=Math.max(0,scoreB-1);
-    document.getElementById('bs').textContent=scoreB;
-  }
+  if(t=='a'){scoreA=Math.max(0,scoreA-1);as.textContent=scoreA;}
+  else{scoreB=Math.max(0,scoreB-1);bs.textContent=scoreB;}
 }
-
 function foul(t,n){
-  if(t=='a'){
-    af=Math.max(0,af+n);
-    document.getElementById('af').textContent=af;
-  }else{
-    bf=Math.max(0,bf+n);
-    document.getElementById('bf').textContent=bf;
-  }
+  if(t=='a'){af=Math.max(0,af+n);document.getElementById('af').textContent=af;}
+  else{bf=Math.max(0,bf+n);document.getElementById('bf').textContent=bf;}
 }
-
 function togglePos(){
-  if(possession=='A'){
-    possession='B';
-    document.getElementById('pos').textContent='B ➡️';
-  }else{
-    possession='A';
-    document.getElementById('pos').textContent='⬅️ A';
-  }
+  possession=possession=='A'?'B':'A';
+  pos.textContent=possession=='A'?'⬅️ A':'B ➡️';
 }
-
-function resetShot(n){
-  shot=n;
-  document.getElementById('sc').textContent=shot;
-}
-
-function setGame(){
-  game=parseInt(document.getElementById('mins').value)*60;
-  drawGame();
-}
-
+function resetShot(n){shot=n;sc.textContent=shot;}
+function setGame(){game=parseInt(mins.value)*60;drawGame();}
 function drawGame(){
-  let m=Math.floor(game/60);
-  let s=game%60;
-  document.getElementById('gc').textContent=
-    String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');
+  let m=Math.floor(game/60), s=game%60;
+  gc.textContent=String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');
 }
+function toggle(){run=!run;}
 
-function toggle(){
-  run=!run;
-}
 function nextQuarter(){
-  if(quarter < 4) quarter++;
-  document.getElementById('q').textContent=quarter;
+  if(quarter<4) quarter++;
+  q.textContent=quarter;
   resetShot(14);
   setGame();
 }
-
 function resetQuarter(){
   quarter=1;
-  document.getElementById('q').textContent=quarter;
+  q.textContent=quarter;
   resetShot(14);
   setGame();
 }
+
 setInterval(()=>{
   if(!run)return;
-
-  if(game>0){
-    game--;
-    drawGame();
-  }
-
-  if(shot>0){
-    shot--;
-    document.getElementById('sc').textContent=shot;
-    if(shot==0)beep();
-  }
+  if(game>0){game--;drawGame();}
+  if(shot>0){shot--;sc.textContent=shot;if(shot==0)beep();}
 },1000);
 
 function playerScore(point){
-  let name=document.getElementById('playerName').value.trim();
-  let team=document.getElementById('playerTeam').value;
-
-  if(!name){
-    alert('선수 이름을 입력하세요!');
-    return;
-  }
-
-  if(!stats[name]) stats[name]=0;
+  let name=playerName.value.trim();
+  let team=playerTeam.value;
+  if(!name){alert('선수 이름을 입력하세요!');return;}
+  if(!stats[name])stats[name]=0;
   stats[name]+=point;
-
   add(team,point);
   drawStats();
 }
-
 function drawStats(){
-  let list=document.getElementById('playerStats');
-  list.innerHTML='';
-
-  Object.entries(stats)
-    .sort((a,b)=>b[1]-a[1])
-    .forEach(([name,score])=>{
-      let li=document.createElement('li');
-      li.textContent=name+" : "+score+"점";
-      list.appendChild(li);
-    });
+  playerStats.innerHTML='';
+  Object.entries(stats).sort((a,b)=>b[1]-a[1]).forEach(([name,score])=>{
+    let li=document.createElement('li');
+    li.textContent=name+" : "+score+"점";
+    playerStats.appendChild(li);
+  });
 }
-
 function makeBracket(){
-  let p=document.getElementById('players').value.trim().split(/\n+/).filter(x=>x);
-  let bracket=document.getElementById('bracket');
+  let p=players.value.trim().split(/\n+/).filter(x=>x);
   bracket.innerHTML="";
   idx=0;
-
   for(let i=0;i<p.length-1;i+=2){
     let li=document.createElement('li');
     li.textContent=p[i]+" vs "+p[i+1];
-
-    if(i==0){
-      li.className='current';
-      document.getElementById('an').textContent=p[i];
-      document.getElementById('bn').textContent=p[i+1];
-    }
-
+    if(i==0){li.className='current';an.textContent=p[i];bn.textContent=p[i+1];}
     bracket.appendChild(li);
   }
 }
-
 function nextGame(){
-  let items=[...document.getElementById('bracket').children];
-
-  if(idx<items.length){
-    items[idx].className='done';
-  }
-
+  let items=[...bracket.children];
+  if(idx<items.length)items[idx].className='done';
   idx++;
-
   if(idx<items.length){
     items[idx].className='current';
     let sp=items[idx].textContent.split(" vs ");
-    document.getElementById('an').textContent=sp[0];
-    document.getElementById('bn').textContent=sp[1];
+    an.textContent=sp[0];bn.textContent=sp[1];
   }
-
-  scoreA=0;
-  scoreB=0;
-  document.getElementById('as').textContent=0;
-  document.getElementById('bs').textContent=0;
-
-  resetShot(14);
-  setGame();
+  scoreA=0;scoreB=0;as.textContent=0;bs.textContent=0;
+  resetShot(14);setGame();resetQuarter();
 }
-
 drawGame();
 </script>
+</body>
+</html>
