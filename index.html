@@ -154,8 +154,6 @@ function makeBracket(){
  for(let i=0;i<p.length-1;i+=2){
    let li=document.createElement('li');
    li.textContent=p[i]+" vs "+p[i+1];
-  stats={};
-drawStats();
    if(i==0){li.className='current'; let sp=li.textContent.split(" vs ");an.textContent=sp[0];bn.textContent=sp[1];}
    bracket.appendChild(li);
  }
@@ -173,9 +171,6 @@ function nextGame(){
 resetShot(14);
 setGame();
 
-stats={};
-drawStats();
-}
 }
 drawGame();
 </script></body></html>
