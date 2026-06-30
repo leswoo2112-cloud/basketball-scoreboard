@@ -284,23 +284,35 @@ setInterval(()=>{
       beep();
     }
   }
-},1000);
 function playerScore(point){
-let name=document.getElementById("playerName").value.trim();
-let team=document.getElementById("playerTeam").value;
-  if(!name){alert('선수 이름을 입력하세요!');return;}
-  if(!stats[name])stats[name]=0;
+  const nameInput=document.getElementById("playerName");
+  const teamInput=document.getElementById("playerTeam");
+  const list=document.getElementById("playerStats");
+
+  let name=nameInput.value.trim();
+  let team=teamInput.value;
+
+  if(name==""){
+    alert("선수 이름을 입력하세요!");
+    return;
+  }
+
+  if(!stats[name]){
+    stats[name]=0;
+  }
+
   stats[name]+=point;
-  add(team,point);
-  drawStats();
+  add(team, point);
+
+  list.innerHTML="";
+  Object.entries(stats)
+    .sort((a,b)=>b[1]-a[1])
+    .forEach(([player,score])=>{
+      let li=document.createElement("li");
+      li.textContent=player+" : "+score+"점";
+      list.appendChild(li);
+    });
 }
-function drawStats(){
-  playerStats.innerHTML='';
-  Object.entries(stats).sort((a,b)=>b[1]-a[1]).forEach(([name,score])=>{
-    let li=document.createElement('li');
-    li.textContent=name+" : "+score+"점";
-    playerStats.appendChild(li);
-  });
 }
 function makeBracket(){
   let p=players.value.trim().split(/\n+/).filter(x=>x);
