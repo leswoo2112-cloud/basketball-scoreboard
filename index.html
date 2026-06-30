@@ -151,9 +151,35 @@ li{padding:6px}
 <script>
 let run=false, shot=14, game=300, scoreA=0, scoreB=0, af=0, bf=0, idx=0, quarter=1;
 let possession='A';
-let stats={};
 
-function beep(){try{let c=new(window.AudioContext||webkitAudioContext)();let o=c.createOscillator();let g=c.createGain();o.connect(g);g.connect(c.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.25);o.stop(c.currentTime+.25);}catch(e){alert("부저!");}}
+
+function beep(){
+  let ctx=new(window.AudioContext||webkitAudioContext)();
+  let osc=ctx.createOscillator();
+  let gain=ctx.createGain();
+  osc.type="sawtooth";
+  osc.frequency.value=880;
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  gain.gain.setValueAtTime(0.3,ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.6);
+  osc.start();
+  osc.stop(ctx.currentTime+0.6);
+}
+
+function finalBuzzer(){
+  let ctx=new(window.AudioContext||webkitAudioContext)();
+  let osc=ctx.createOscillator();
+  let gain=ctx.createGain();
+  osc.type="square";
+  osc.frequency.value=440;
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  gain.gain.setValueAtTime(0.4,ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+1.5);
+  osc.start();
+  osc.stop(ctx.currentTime+1.5);
+}
 
 function applyNames(){
   an.textContent=document.getElementById('a').value||"A";
@@ -199,8 +225,26 @@ function resetQuarter(){
 
 setInterval(()=>{
   if(!run)return;
-  if(game>0){game--;drawGame();}
-  if(shot>0){shot--;sc.textContent=shot;if(shot==0)beep();}
+
+  if(game>0){
+    game--;
+    drawGame();
+
+    if(game==0){
+      run=false;
+      finalBuzzer();
+      alert("🏀 경기 종료");
+    }
+  }
+
+  if(shot>0){
+    shot--;
+    sc.textContent=shot;
+
+    if(shot==0){
+      beep();
+    }
+  }
 },1000);
 
 function playerScore(point){
