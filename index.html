@@ -17,6 +17,9 @@ li{padding:6px}
 <div><input id=a placeholder="A 선수"><input id=b placeholder="B 선수">
 <button onclick="applyNames()">이름 적용</button></div>
 <div class=score><span id=an>A</span> <span id=as>0</span> : <span id=bs>0</span> <span id=bn>B</span></div>
+<div style="font-size:28px;text-align:center;margin:10px;">
+A 파울: <span id="af">0</span> &nbsp;&nbsp; B 파울: <span id="bf">0</span>
+</div>
 <div class=clock>경기 <span id=gc>05:00</span></div>
 <div class=shot>샷클락 <span id=sc>14</span></div>
 <div>
@@ -35,6 +38,11 @@ li{padding:6px}
 <button onclick="sub('a')">A-1</button><br>
 <button onclick="add('b',1)">B+1</button><button onclick="add('b',2)">B+2</button><button onclick="add('b',3)">B+3</button>
 <button onclick="sub('b')">B-1</button>
+<br>
+<button onclick="foul('a',1)">A 파울+</button>
+<button onclick="foul('a',-1)">A 파울-</button>
+<button onclick="foul('b',1)">B 파울+</button>
+<button onclick="foul('b',-1)">B 파울-</button>
 </div>
 </div>
 <div class="panel">
@@ -46,11 +54,20 @@ li{padding:6px}
 </div>
 </div>
 <script>
-let run=false,shot=14,game=300,as=0,bs=0,idx=0;
+let run=false,shot=14,game=300,as=0,bs=0,af=0,bf=0,idx=0;
 function beep(){try{let c=new(window.AudioContext||webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.25);o.stop(c.currentTime+.25);}catch(e){alert("부저!");}}
 function applyNames(){an.textContent=a.value||"A";bn.textContent=b.value||"B";}
 function add(t,n){if(t=='a'){as+=n;aspan=as}else{bs+=n;aspan=bs}document.getElementById(t=='a'?'as':'bs').textContent=aspan;}
 function sub(t){if(t=='a'){as=Math.max(0,as-1);document.getElementById('as').textContent=as}else{bs=Math.max(0,bs-1);document.getElementById('bs').textContent=bs}}
+function foul(t,n){
+ if(t=='a'){
+  af=Math.max(0,af+n);
+  document.getElementById('af').textContent=af;
+ }else{
+  bf=Math.max(0,bf+n);
+  document.getElementById('bf').textContent=bf;
+ }
+}
 function resetShot(n){shot=n;sc.textContent=shot;}
 function setGame(){game=parseInt(mins.value)*60;drawGame();}
 function drawGame(){let m=Math.floor(game/60),s=game%60;gc.textContent=String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');}
