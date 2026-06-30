@@ -75,102 +75,177 @@ A 파울: <span id="af">0</span> &nbsp;&nbsp; B 파울: <span id="bf">0</span>
 </div>
 </div>
 <script>
-78 let run=false,shot=14,game=300,as=0,bs=0,af=0,bf=0,idx=0;
-79 let possession='A';
+<script>
+let run=false, shot=14, game=300, scoreA=0, scoreB=0, af=0, bf=0, idx=0;
+let possession='A';
 let stats={};
-function playerScore(point){
- let name=document.getElementById('playerName').value.trim();
- let team=document.getElementById('playerTeam').value;
 
- if(!name){
-  alert('선수 이름을 입력하세요!');
-  return;
- }
-
- if(!stats[name]) stats[name]=0;
- stats[name]+=point;
-
- add(team,point);
- drawStats();
+function beep(){
+  try{
+    let c=new(window.AudioContext||webkitAudioContext)();
+    let o=c.createOscillator();
+    let g=c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.25);
+    o.stop(c.currentTime+.25);
+  }catch(e){alert("부저!");}
 }
-function beep(){try{let c=new(window.AudioContext||webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.25);o.stop(c.currentTime+.25);}catch(e){alert("부저!");}}
-function applyNames(){an.textContent=a.value||"A";bn.textContent=b.value||"B";}
-function add(t,n){if(t=='a'){as+=n;aspan=as}else{bs+=n;aspan=bs}document.getElementById(t=='a'?'as':'bs').textContent=aspan;}
-function sub(t){if(t=='a'){as=Math.max(0,as-1);document.getElementById('as').textContent=as}else{bs=Math.max(0,bs-1);document.getElementById('bs').textContent=bs}}
+
+function applyNames(){
+  document.getElementById('an').textContent=document.getElementById('a').value||"A";
+  document.getElementById('bn').textContent=document.getElementById('b').value||"B";
+}
+
+function add(t,n){
+  if(t=='a'){
+    scoreA+=n;
+    document.getElementById('as').textContent=scoreA;
+  }else{
+    scoreB+=n;
+    document.getElementById('bs').textContent=scoreB;
+  }
+}
+
+function sub(t){
+  if(t=='a'){
+    scoreA=Math.max(0,scoreA-1);
+    document.getElementById('as').textContent=scoreA;
+  }else{
+    scoreB=Math.max(0,scoreB-1);
+    document.getElementById('bs').textContent=scoreB;
+  }
+}
+
 function foul(t,n){
- if(t=='a'){
-  af=Math.max(0,af+n);
-  document.getElementById('af').textContent=af;
- }else{
-  bf=Math.max(0,bf+n);
-  document.getElementById('bf').textContent=bf;
- }
+  if(t=='a'){
+    af=Math.max(0,af+n);
+    document.getElementById('af').textContent=af;
+  }else{
+    bf=Math.max(0,bf+n);
+    document.getElementById('bf').textContent=bf;
+  }
 }
+
 function togglePos(){
- if(possession=='A'){
-  possession='B';
-  document.getElementById('pos').textContent='B ➡️';
- }else{
-  possession='A';
-  document.getElementById('pos').textContent='⬅️ A';
- }
+  if(possession=='A'){
+    possession='B';
+    document.getElementById('pos').textContent='B ➡️';
+  }else{
+    possession='A';
+    document.getElementById('pos').textContent='⬅️ A';
+  }
 }
-function resetShot(n){shot=n;sc.textContent=shot;}
-function setGame(){game=parseInt(mins.value)*60;drawGame();}
+
+function resetShot(n){
+  shot=n;
+  document.getElementById('sc').textContent=shot;
+}
+
+function setGame(){
+  game=parseInt(document.getElementById('mins').value)*60;
+  drawGame();
+}
+
+function drawGame(){
+  let m=Math.floor(game/60);
+  let s=game%60;
+  document.getElementById('gc').textContent=
+    String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');
+}
+
+function toggle(){
+  run=!run;
+}
+
+setInterval(()=>{
+  if(!run)return;
+
+  if(game>0){
+    game--;
+    drawGame();
+  }
+
+  if(shot>0){
+    shot--;
+    document.getElementById('sc').textContent=shot;
+    if(shot==0)beep();
+  }
+},1000);
+
 function playerScore(point){
- let name=document.getElementById('playerName').value.trim();
- let team=document.getElementById('playerTeam').value;
+  let name=document.getElementById('playerName').value.trim();
+  let team=document.getElementById('playerTeam').value;
 
- if(!name){
-  alert('선수 이름을 입력하세요!');
-  return;
- }
+  if(!name){
+    alert('선수 이름을 입력하세요!');
+    return;
+  }
 
- if(!stats[name]) stats[name]=0;
- stats[name]+=point;
+  if(!stats[name]) stats[name]=0;
+  stats[name]+=point;
 
- add(team,point);
- drawStats();
+  add(team,point);
+  drawStats();
 }
 
 function drawStats(){
- let list=document.getElementById('playerStats');
- list.innerHTML='';
+  let list=document.getElementById('playerStats');
+  list.innerHTML='';
 
- Object.entries(stats)
- .sort((a,b)=>b[1]-a[1])
- .forEach(([name,score])=>{
-  let li=document.createElement('li');
-  li.textContent=name+" : "+score+"점";
-  list.appendChild(li);
- });
+  Object.entries(stats)
+    .sort((a,b)=>b[1]-a[1])
+    .forEach(([name,score])=>{
+      let li=document.createElement('li');
+      li.textContent=name+" : "+score+"점";
+      list.appendChild(li);
+    });
 }
-function drawGame(){let m=Math.floor(game/60),s=game%60;gc.textContent=String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');}
-function toggle(){run=!run;}
-setInterval(()=>{if(!run)return;if(game>0){game--;drawGame();}if(shot>0){shot--;sc.textContent=shot;if(shot==0)beep();}},1000);
+
 function makeBracket(){
- let p=players.value.trim().split(/\n+/).filter(x=>x);
- bracket.innerHTML=""; idx=0;
- for(let i=0;i<p.length-1;i+=2){
-   let li=document.createElement('li');
-   li.textContent=p[i]+" vs "+p[i+1];
-   if(i==0){li.className='current'; let sp=li.textContent.split(" vs ");an.textContent=sp[0];bn.textContent=sp[1];}
-   bracket.appendChild(li);
- }
-}
-function nextGame(){
- let items=[...bracket.children];
- if(idx<items.length){items[idx].className='done';}
- idx++;
- if(idx<items.length){
-   items[idx].className='current';
-   let sp=items[idx].textContent.split(" vs ");
-   an.textContent=sp[0];bn.textContent=sp[1];
- }
- as=bs=0;document.getElementById('as').textContent=0;document.getElementById('bs').textContent=0;
-resetShot(14);
-setGame();
+  let p=document.getElementById('players').value.trim().split(/\n+/).filter(x=>x);
+  let bracket=document.getElementById('bracket');
+  bracket.innerHTML="";
+  idx=0;
 
+  for(let i=0;i<p.length-1;i+=2){
+    let li=document.createElement('li');
+    li.textContent=p[i]+" vs "+p[i+1];
+
+    if(i==0){
+      li.className='current';
+      document.getElementById('an').textContent=p[i];
+      document.getElementById('bn').textContent=p[i+1];
+    }
+
+    bracket.appendChild(li);
+  }
 }
+
+function nextGame(){
+  let items=[...document.getElementById('bracket').children];
+
+  if(idx<items.length){
+    items[idx].className='done';
+  }
+
+  idx++;
+
+  if(idx<items.length){
+    items[idx].className='current';
+    let sp=items[idx].textContent.split(" vs ");
+    document.getElementById('an').textContent=sp[0];
+    document.getElementById('bn').textContent=sp[1];
+  }
+
+  scoreA=0;
+  scoreB=0;
+  document.getElementById('as').textContent=0;
+  document.getElementById('bs').textContent=0;
+
+  resetShot(14);
+  setGame();
+}
+
 drawGame();
-</script></body></html>
+</script>
