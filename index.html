@@ -21,6 +21,7 @@ li{padding:6px}
 A 파울: <span id="af">0</span> &nbsp;&nbsp; B 파울: <span id="bf">0</span>
 </div>
 <div class=clock>경기 <span id=gc>05:00</span></div>
+<div class=clock>쿼터 <span id=q>1</span>Q</div>
 <div class=shot>샷클락 <span id=sc>14</span></div>
 <div style="font-size:36px;text-align:center;margin:10px;">
 공격권 : <span id="pos">⬅️ A</span>
@@ -30,6 +31,8 @@ A 파울: <span id="af">0</span> &nbsp;&nbsp; B 파울: <span id="bf">0</span>
 <button onclick=toggle()>▶/⏸</button>
 <button onclick="resetShot(14)">14초</button>
 <button onclick="resetShot(24)">24초</button>
+<button onclick="nextQuarter()">다음 쿼터</button>
+<button onclick="resetQuarter()">쿼터 초기화</button>
 <select id=mins onchange="setGame()">
 <option>3</option>
 <option selected>5</option>
@@ -76,7 +79,7 @@ A 파울: <span id="af">0</span> &nbsp;&nbsp; B 파울: <span id="bf">0</span>
 </div>
 <script>
 
-let run=false, shot=14, game=300, scoreA=0, scoreB=0, af=0, bf=0, idx=0;
+let run=false, shot=14, game=300, scoreA=0, scoreB=0, af=0, bf=0, idx=0, quarter=1;
 let possession='A';
 let stats={};
 
@@ -157,7 +160,19 @@ function drawGame(){
 function toggle(){
   run=!run;
 }
+function nextQuarter(){
+  if(quarter < 4) quarter++;
+  document.getElementById('q').textContent=quarter;
+  resetShot(14);
+  setGame();
+}
 
+function resetQuarter(){
+  quarter=1;
+  document.getElementById('q').textContent=quarter;
+  resetShot(14);
+  setGame();
+}
 setInterval(()=>{
   if(!run)return;
 
