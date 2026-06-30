@@ -286,8 +286,8 @@ setInterval(()=>{
   }
 },1000);
 function playerScore(point){
-  let name=playerName.value.trim();
-  let team=playerTeam.value;
+let name=document.getElementById("playerName").value.trim();
+let team=document.getElementById("playerTeam").value;
   if(!name){alert('선수 이름을 입력하세요!');return;}
   if(!stats[name])stats[name]=0;
   stats[name]+=point;
