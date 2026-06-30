@@ -22,6 +22,10 @@ A 파울: <span id="af">0</span> &nbsp;&nbsp; B 파울: <span id="bf">0</span>
 </div>
 <div class=clock>경기 <span id=gc>05:00</span></div>
 <div class=shot>샷클락 <span id=sc>14</span></div>
+<div style="font-size:36px;text-align:center;margin:10px;">
+공격권 : <span id="pos">⬅️ A</span>
+</div>
+<button onclick="togglePos()">공격권 변경</button>
 <div>
 <button onclick=toggle()>▶/⏸</button>
 <button onclick="resetShot(14)">14초</button>
@@ -55,6 +59,7 @@ A 파울: <span id="af">0</span> &nbsp;&nbsp; B 파울: <span id="bf">0</span>
 </div>
 <script>
 let run=false,shot=14,game=300,as=0,bs=0,af=0,bf=0,idx=0;
+let possession='A';
 function beep(){try{let c=new(window.AudioContext||webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.25);o.stop(c.currentTime+.25);}catch(e){alert("부저!");}}
 function applyNames(){an.textContent=a.value||"A";bn.textContent=b.value||"B";}
 function add(t,n){if(t=='a'){as+=n;aspan=as}else{bs+=n;aspan=bs}document.getElementById(t=='a'?'as':'bs').textContent=aspan;}
@@ -66,6 +71,15 @@ function foul(t,n){
  }else{
   bf=Math.max(0,bf+n);
   document.getElementById('bf').textContent=bf;
+ }
+}
+function togglePos(){
+ if(possession=='A'){
+  possession='B';
+  document.getElementById('pos').textContent='B ➡️';
+ }else{
+  possession='A';
+  document.getElementById('pos').textContent='⬅️ A';
  }
 }
 function resetShot(n){shot=n;sc.textContent=shot;}
