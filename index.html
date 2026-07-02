@@ -42,6 +42,7 @@ button{cursor:pointer}.red{background:#8b1111}.blue{background:#0f3f8f}.mainbtn{
 <button onclick="resetQuarter()">쿼터 초기화</button>
 <button onclick="fullScreen()">📺 전체화면</button>
 <button onclick="toggleRef()">📺 관중모드</button>
+<button onclick="openAnalysis()">📊 전력분석</button>
 <br>
 <select id="mins" onchange="setGame()">
 <option>3</option><option selected>5</option><option>7</option><option>10</option>
@@ -345,6 +346,27 @@ function fullScreen(){
 }
 function toggleRef(){
     document.getElementById("refPanel").classList.toggle("hideRef");
+}
+function openAnalysis(){
+
+    let report = "📊 전력분석\n\n";
+
+    Object.entries(stats)
+    .sort((a,b)=>b[1].pts-a[1].pts)
+    .forEach(([name,s])=>{
+
+        report +=
+name + "\n" +
+"🏀 " + s.pts + "점\n" +
+"🎯 어시 " + s.ast + "\n" +
+"💪 리바 " + s.reb + "\n" +
+"🦊 스틸 " + s.stl + "\n" +
+"🛡️ 블록 " + s.blk + "\n" +
+"❌ 턴오버 " + s.to + "\n\n";
+
+    });
+
+    alert(report);
 }
 drawGame();
 </script>
