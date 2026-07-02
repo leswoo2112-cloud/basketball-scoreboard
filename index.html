@@ -38,7 +38,7 @@ button{cursor:pointer}.red{background:#8b1111}.blue{background:#0f3f8f}.mainbtn{
 <button onclick="resetShot(24)">24초</button>
 <button onclick="nextQuarter()">다음 쿼터</button>
 <button onclick="resetQuarter()">쿼터 초기화</button>
-
+<button onclick="fullScreen()">📺 전체화면</button>
 <br>
 <select id="mins" onchange="setGame()">
 <option>3</option><option selected>5</option><option>7</option><option>10</option>
@@ -255,7 +255,15 @@ function nextGame(){
   timeoutA=3; timeoutB=3; ta.textContent=3; tb.textContent=3;
   resetShot(14); setGame(); resetQuarter();
 }
+function fullScreen(){
+  let elem=document.documentElement;
 
+  if(elem.requestFullscreen){
+    elem.requestFullscreen();
+  }else if(elem.webkitRequestFullscreen){
+    elem.webkitRequestFullscreen();
+  }
+}
 drawGame();
 </script>
 </body>
