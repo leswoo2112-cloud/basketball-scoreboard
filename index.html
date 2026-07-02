@@ -68,6 +68,7 @@ button{cursor:pointer}.red{background:#8b1111}.blue{background:#0f3f8f}.mainbtn{
 <div class="clock">경기 <span id="gc">05:00</span></div>
 <div class="quarter">QUARTER <span id="q">1</span>Q</div>
 <div class="shot">SHOT CLOCK <span id="sc">14</span></div>
+<div id="violation" style="font-size:32px;color:#ff3030;font-weight:bold;text-align:center;height:40px;"></div>
 <h2>공격권 <span id="pos">⬅️ A</span></h2>
 <h2>A 파울 <span id="af">0</span> | B 파울 <span id="bf">0</span></h2>
 <h2>A 타임아웃 <span id="ta">3</span> | B 타임아웃 <span id="tb">3</span></h2>
@@ -144,11 +145,17 @@ function scorePop(el){
 }
 
 function add(t,n){
-  if(t==='a'){
-    scoreA+=n; as.textContent=scoreA; scorePop(as);
-  }else{
-    scoreB+=n; bs.textContent=scoreB; scorePop(bs);
-  }
+    if(t==="a"){
+        scoreA+=n;
+        as.textContent=scoreA;
+        scorePop(as);
+        drawStats();    // ← 추가
+    }else{
+        scoreB+=n;
+        bs.textContent=scoreB;
+        scorePop(bs);
+        drawStats();    // ← 추가
+    }
 }
 
 function sub(t){
@@ -203,12 +210,35 @@ setInterval(()=>{
     if(game===0){run=false; finalBuzzer(); alert("🏀 경기 종료");}
   }
 
-  if(shot>0){
-    shot--; sc.textContent=shot;
-    if(shot<=5 && shot>0){sc.classList.add("blink");}
-    else{sc.classList.remove("blink");}
-    if(shot===0){sc.classList.remove("blink"); beep();}
-  }
+if(shot>0){
+    shot--;
+    sc.textContent=shot;
+
+    if(shot<=5 && shot>0){
+        sc.classList.add("blink");
+    }else{
+        sc.classList.remove("blink");
+        document.getElementById("violation").textContent="";
+    }
+
+    if(shot===0){
+        sc.classList.remove("blink");
+        beep();
+
+        document.getElementById("violation").textContent =
+            "⛔ 24초 바이얼레이션";
+
+        setTimeout(()=>{
+            document.getElementById("violation").textContent="";
+        },3000);
+
+        possession = possession==="A" ? "B" : "A";
+        pos.textContent = possession==="A" ? "⬅️ A" : "B ➡️";
+
+        resetShot(24);
+    }
+}
+
 },1000);
 
 function playerScore(point){
