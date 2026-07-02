@@ -99,6 +99,10 @@ button{cursor:pointer}.red{background:#8b1111}.blue{background:#0f3f8f}.mainbtn{
 <button onclick="playerScore(2)">선수 +2</button>
 <button onclick="playerScore(3)">선수 +3</button>
 <ul id="playerStats"></ul>
+<h2>🏆 MVP</h2>
+<div id="mvp" style="font-size:24px;font-weight:bold;color:gold;text-align:center;">
+아직 없음
+</div>
 </div>
 
 </div>
@@ -227,6 +231,14 @@ function drawStats(){
     li.textContent=player+" : "+score+"점";
     list.appendChild(li);
   });
+  let ranking = Object.entries(stats).sort((a,b)=>b[1]-a[1]);
+
+if(ranking.length>0){
+    document.getElementById("mvp").textContent =
+        "🏆 " + ranking[0][0] + " (" + ranking[0][1] + "점)";
+}else{
+    document.getElementById("mvp").textContent = "아직 없음";
+}
 }
 
 function makeBracket(){
