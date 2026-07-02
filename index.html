@@ -99,6 +99,12 @@ button{cursor:pointer}.red{background:#8b1111}.blue{background:#0f3f8f}.mainbtn{
 <button onclick="playerScore(1)">선수 +1</button>
 <button onclick="playerScore(2)">선수 +2</button>
 <button onclick="playerScore(3)">선수 +3</button>
+<br>
+<button onclick="playerStat('ast')">어시 +1</button>
+<button onclick="playerStat('reb')">리바 +1</button>
+<button onclick="playerStat('stl')">스틸 +1</button>
+<button onclick="playerStat('blk')">블록 +1</button>
+<button onclick="playerStat('to')">턴오버 +1</button>
 <ul id="playerStats"></ul>
 <h2>🏆 MVP</h2>
 <div id="mvp" style="font-size:24px;font-weight:bold;color:gold;text-align:center;">
@@ -247,30 +253,58 @@ function playerScore(point){
 
   if(!name){alert("선수 이름을 입력하세요!"); return;}
 
-  if(!stats[name]) stats[name]=0;
-  stats[name]+=point;
+if(!stats[name]){
+  stats[name]={pts:0, ast:0, reb:0, stl:0, blk:0, to:0};
+}
+stats[name].pts+=point;
   add(team,point);
+drawStats();
+}
+
+function playerStat(type){
+  let name=document.getElementById("playerName").value.trim();
+
+  if(!name){
+    alert("선수 이름을 입력하세요!");
+    return;
+  }
+
+  if(!stats[name]){
+    stats[name]={pts:0, ast:0, reb:0, stl:0, blk:0, to:0};
+  }
+
+  stats[name][type]++;
   drawStats();
 }
 
 function drawStats(){
   let list=document.getElementById("playerStats");
   list.innerHTML="";
-  Object.entries(stats).sort((a,b)=>b[1]-a[1]).forEach(([player,score])=>{
-    let li=document.createElement("li");
-    li.textContent=player+" : "+score+"점";
-    list.appendChild(li);
-  });
-  let ranking = Object.entries(stats).sort((a,b)=>b[1]-a[1]);
 
-if(ranking.length>0){
-    document.getElementById("mvp").textContent =
-        "🏆 " + ranking[0][0] + " (" + ranking[0][1] + "점)";
-}else{
-    document.getElementById("mvp").textContent = "아직 없음";
-}
-}
+  Object.entries(stats)
+    .sort((a,b)=>b[1].pts-a[1].pts)
+    .forEach(([player,s])=>{
+      let li=document.createElement("li");
+      li.textContent=
+        player+" : "+
+        s.pts+"점 / "+
+        s.ast+"어시 / "+
+        s.reb+"리바 / "+
+        s.stl+"스틸 / "+
+        s.blk+"블록 / "+
+        s.to+"턴오버";
+      list.appendChild(li);
+    });
 
+  let ranking=Object.entries(stats).sort((a,b)=>b[1].pts-a[1].pts);
+
+  if(ranking.length>0){
+    document.getElementById("mvp").textContent=
+      "🏆 "+ranking[0][0]+" ("+ranking[0][1].pts+"점)";
+  }else{
+    document.getElementById("mvp").textContent="아직 없음";
+  }
+}
 function makeBracket(){
   let p=document.getElementById("players").value.trim().split(/\n+/).filter(x=>x);
   let bracket=document.getElementById("bracket");
