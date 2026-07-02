@@ -21,7 +21,9 @@ h1,h2{text-align:center}
 button,input,select,textarea{font-size:18px;margin:5px;padding:10px 14px;border-radius:8px;border:1px solid #596272;background:#111827;color:white}
 button{cursor:pointer}.red{background:#8b1111}.blue{background:#0f3f8f}.mainbtn{background:#202938}
 .current{background:#0a4;padding:6px}.done{background:#333;padding:6px}li{padding:6px}
+.hideRef{display:none;}
 </style>
+
 </head>
 <body>
 <div class="wrap">
@@ -39,6 +41,7 @@ button{cursor:pointer}.red{background:#8b1111}.blue{background:#0f3f8f}.mainbtn{
 <button onclick="nextQuarter()">다음 쿼터</button>
 <button onclick="resetQuarter()">쿼터 초기화</button>
 <button onclick="fullScreen()">📺 전체화면</button>
+<button onclick="toggleRef()">📺 관중모드</button>
 <br>
 <select id="mins" onchange="setGame()">
 <option>3</option><option selected>5</option><option>7</option><option>10</option>
@@ -70,7 +73,7 @@ button{cursor:pointer}.red{background:#8b1111}.blue{background:#0f3f8f}.mainbtn{
 <h2>A 타임아웃 <span id="ta">3</span> | B 타임아웃 <span id="tb">3</span></h2>
 </div>
 
-<div class="panel">
+<div class="panel" id="refPanel">
 <h2>점수</h2>
 <button class="red" onclick="add('a',1)">A +1</button>
 <button class="red" onclick="add('a',2)">A +2</button>
@@ -263,6 +266,9 @@ function fullScreen(){
   }else if(elem.webkitRequestFullscreen){
     elem.webkitRequestFullscreen();
   }
+}
+function toggleRef(){
+    document.getElementById("refPanel").classList.toggle("hideRef");
 }
 drawGame();
 </script>
